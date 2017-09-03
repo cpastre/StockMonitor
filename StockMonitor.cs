@@ -23,6 +23,14 @@ namespace StockMonitor
         void OnStockTick(object sender, StockTick stockTick)
         {
             const decimal maxChangeRatio = 0.1m;
+
+            var ticks = Observable.FromEventPattern<EventHandler<StockTick>, StockTick>(
+                h => ticker.StockTick += h,
+                h => ticker.StockTick -= h)
+                .Select(tickEvent => tickEvent.EventArgs)
+                .Synchronize();
+            )
+
             StockInfo stockInfo;
             var quoteSymbol = stockTick.QuoteSymbol;
             var stockInfoExists = _stockInfos.TryGetValue(quoteSymbol, out stockInfo);
